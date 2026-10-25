@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>River Lane Coffee · London</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="site-page">
+    <nav class="site-nav">
+      <div class="brand-mark">
+        <div class="brand-logo" aria-hidden="true">☕</div>
+        <span>River Lane Coffee</span>
+      </div>
+      <div class="site-nav-links">
+        <a class="btn btn-ghost btn-sm" href="#menu">Menu</a>
+        <a class="btn btn-ghost btn-sm" href="#hours">Hours</a>
+        <a class="btn btn-primary btn-sm" href="#order">Order</a>
+        <a class="btn btn-secondary btn-sm" href="#loyalty">Join loyalty</a>
+        <span class="proto-badge">Prototype</span>
+      </div>
+    </nav>
+
+    <header class="site-hero">
+      <h1>Coffee worth crossing the lane for</h1>
+      <p class="tagline">Independent café · beans roasted weekly · proper flat whites</p>
+      <p class="loc">14 River Lane, Shoreditch, London E1 · card &amp; contactless welcome</p>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="#order">Order for pickup</a>
+        <a class="btn btn-secondary" href="guest-whatsapp.html">Order on WhatsApp</a>
+      </div>
+    </header>
+
+    <main class="site-body">
+      <section class="site-section" id="menu">
+        <h2>Menu</h2>
+        <p class="text-muted" style="margin-bottom:16px">Same menu of record as WhatsApp — updated by the merchant console.</p>
+        <div id="site-menu"></div>
+      </section>
+
+      <section class="site-section" id="hours">
+        <h2>Hours</h2>
+        <div class="hours-grid">
+          <span class="day">Monday – Friday</span><span class="time">07:30 – 17:00</span>
+          <span class="day">Saturday</span><span class="time">08:00 – 16:00</span>
+          <span class="day">Sunday</span><span class="time">09:00 – 15:00</span>
+        </div>
+        <p class="text-muted mt-16">Kitchen closes 30 minutes before we do. Allergens: please ask the team or note them on your order.</p>
+      </section>
+
+      <section class="site-section" id="order">
+        <h2>Order for pickup</h2>
+        <p class="text-muted" style="margin-bottom:8px">Pay at the counter on your existing card machine — we don’t take card details here.</p>
+        <form class="order-form" id="order-form">
+          <label for="o-item">Item</label>
+          <select id="o-item" required></select>
+          <label for="o-qty">Quantity</label>
+          <select id="o-qty">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+          <label for="o-name">Your name</label>
+          <input id="o-name" type="text" required placeholder="Alex" value="Alex" />
+          <label for="o-pickup">Pickup</label>
+          <select id="o-pickup">
+            <option>ASAP (~10 min)</option>
+            <option>In 20 minutes</option>
+            <option>In 30 minutes</option>
+          </select>
+          <label for="o-notes">Notes / allergens</label>
+          <textarea id="o-notes" rows="2" placeholder="e.g. oat milk"></textarea>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:500;margin-top:14px">
+            <input type="checkbox" id="o-stamp" checked />
+            Stamp my loyalty card
+          </label>
+          <button type="submit" class="btn btn-primary btn-block mt-16">Place order · pay at pickup</button>
+        </form>
+        <p class="text-muted mt-12">Prefer chat? <a href="guest-whatsapp.html">Order on WhatsApp</a> instead.</p>
+      </section>
+
+      <section class="site-section" id="loyalty">
+        <h2>Loyalty</h2>
+        <div class="loyalty-join-box" id="loyalty-box">
+          <div class="lj-emoji" aria-hidden="true">🎫</div>
+          <h3>Buy 9 coffees, get 1 free</h3>
+          <p>Virtual stamp card in WhatsApp — no plastic, no app store. We’ll ask for consent (PECR) before any winback messages.</p>
+          <div id="loyalty-join-form">
+            <input id="lj-name" type="text" placeholder="Your name" value="Alex" style="width:100%;max-width:260px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px" />
+            <br />
+            <button type="button" class="btn btn-primary" id="btn-join">Join loyalty</button>
+          </div>
+          <div id="loyalty-joined" class="hidden">
+            <p id="lj-status" style="font-weight:600;color:var(--accent-dark)"></p>
+            <a class="btn btn-secondary btn-sm mt-12" href="guest-whatsapp.html">See card in WhatsApp</a>
+          </div>
+        </div>
+      </section>
+
+      <p class="text-muted" style="text-align:center;font-size:12px">
+        <a href="index.html">← Prototype portals</a> ·
+        <a href="merchant.html">Merchant console</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      River Lane Coffee · 14 River Lane, Shoreditch E1 · Prototype mini-site (Owner-like)
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+(function () {
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderMenu() {
+    var menu = RLC.availableMenu();
+    var cats = {};
+    menu.forEach(function (m) {
+      if (!cats[m.cat]) cats[m.cat] = [];
+      cats[m.cat].push(m);
+    });
+    var el = document.getElementById("site-menu");
+    el.innerHTML = Object.keys(cats).map(function (cat) {
+      return (
+        '<div class="menu-cat"><h3>' + escapeHtml(cat) + "</h3>" +
+        cats[cat].map(function (m) {
+          return (
+            '<div class="menu-row">' +
+              "<div>" +
+                '<div class="mr-name">' + (m.emoji || "") + " " + escapeHtml(m.name) + "</div>" +
+                (m.desc ? '<div class="mr-desc">' + escapeHtml(m.desc) + "</div>" : "") +
+              "</div>" +
+              '<div class="mr-price">' + RLC.money(m.price) + "</div>" +
+            "</div>"
+          );
+        }).join("") +
+        "</div>"
+      );
+    }).join("");
+
+    var sel = document.getElementById("o-item");
+    sel.innerHTML = menu.map(function (m) {
+      return '<option value="' + m.id + '">' + escapeHtml(m.name) + " — " + RLC.money(m.price) + "</option>";
+    }).join("");
+  }
+
+  function renderLoyalty() {
+    var s = RLC.load();
+    var needed = s.loyaltyRule.stampsNeeded || 9;
+    var member = s.loyaltyMembers.guest_demo;
+    var joined = s.siteJoined || (member && member.stamps > 0);
+    document.querySelector("#loyalty-box h3").textContent =
+      "Buy " + needed + " coffees, get 1 free";
+    if (joined && member) {
+      document.getElementById("loyalty-join-form").classList.add("hidden");
+      document.getElementById("loyalty-joined").classList.remove("hidden");
+      document.getElementById("lj-status").textContent =
+        "You’re in, " + member.name + " — " + (member.stamps || 0) + "/" + needed + " stamps";
+    }
+  }
+
+  document.getElementById("btn-join").addEventListener("click", function () {
+    var name = document.getElementById("lj-name").value.trim() || "Alex";
+    RLC.joinLoyalty(name);
+    RLC.toast("Joined loyalty — open WhatsApp to see your card");
+    renderLoyalty();
+  });
+
+  document.getElementById("order-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var s = RLC.load();
+    var id = document.getElementById("o-item").value;
+    var item = s.menu.find(function (m) { return m.id === id; });
+    if (!item) return;
+    var qty = Number(document.getElementById("o-qty").value) || 1;
+    var name = document.getElementById("o-name").value.trim() || "Guest";
+    var order = RLC.placeOrder({
+      guest: name + " (site)",
+      items: [{ id: item.id, name: item.name, price: item.price, qty: qty }],
+      channel: "site",
+      pay: "pay-at-pickup",
+      pickup: document.getElementById("o-pickup").value,
+      notes: document.getElementById("o-notes").value.trim(),
+      memberId: "guest_demo",
+      stamp: document.getElementById("o-stamp").checked
+    });
+    RLC.toast("Order " + order.id + " sent · " + RLC.money(order.total) + " pay at pickup");
+    renderLoyalty();
+    document.getElementById("o-notes").value = "";
+  });
+
+  renderMenu();
+  renderLoyalty();
+})();
+  </script>
+</body>
+</html>

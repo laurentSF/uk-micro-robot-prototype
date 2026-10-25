@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant console — River Lane Coffee</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="m-shell">
+    <nav class="m-nav" aria-label="Merchant">
+      <div class="brand-mark">
+        <div class="brand-logo" aria-hidden="true">☕</div>
+        <div>
+          <div>River Lane</div>
+          <div style="font-size:11px;opacity:.65;font-weight:500">Merchant</div>
+        </div>
+      </div>
+      <div class="m-nav-label">Home</div>
+      <a href="#orders" class="active"><span class="nav-ico">📥</span> Live orders</a>
+      <a href="#agents"><span class="nav-ico">🤖</span> Agents</a>
+      <a href="#queue"><span class="nav-ico">✅</span> Approve queue</a>
+      <div class="m-nav-label">Catalogue</div>
+      <a href="#menu"><span class="nav-ico">📋</span> Menu of record</a>
+      <a href="#loyalty"><span class="nav-ico">🎫</span> Loyalty</a>
+      <div class="m-nav-label">Agent outputs</div>
+      <a href="#sales"><span class="nav-ico">📊</span> Sales digest</a>
+      <a href="#insights"><span class="nav-ico">💡</span> Insights</a>
+      <a href="#marketing"><span class="nav-ico">📣</span> Marketing</a>
+      <a href="#accountant"><span class="nav-ico">📒</span> Accountant</a>
+      <div class="m-nav-foot">
+        <span class="proto-badge" style="background:rgba(255,255,255,.12);color:#ffd8a8;border-color:rgba(255,200,150,.35)">Prototype</span>
+        <div style="margin-top:10px"><a href="index.html" style="opacity:.85;font-size:12px;padding:0">← All portals</a></div>
+      </div>
+    </nav>
+
+    <main class="m-main">
+      <header class="m-header">
+        <div>
+          <h1>Good afternoon, River Lane</h1>
+          <p class="sub">Shoreditch · card terminal stays yours · agents are on</p>
+        </div>
+        <div class="flex gap-8" style="align-items:center">
+          <a class="btn btn-secondary btn-sm" href="guest-whatsapp.html" target="_blank" rel="noopener">Guest WhatsApp</a>
+          <a class="btn btn-secondary btn-sm" href="guest-site.html" target="_blank" rel="noopener">Mini-site</a>
+        </div>
+      </header>
+
+      <!-- LIVE ORDERS -->
+      <section class="section" id="orders">
+        <div class="section-title">Live orders inbox</div>
+        <div id="orders-list" class="orders-list"></div>
+      </section>
+
+      <!-- AGENTS -->
+      <section class="section" id="agents">
+        <div class="section-title">Agents</div>
+        <div class="agent-grid" id="agent-grid"></div>
+      </section>
+
+      <!-- APPROVE QUEUE -->
+      <section class="section" id="queue">
+        <div class="section-title">Approve queue</div>
+        <div id="queue-list" class="queue-list"></div>
+      </section>
+
+      <!-- MENU -->
+      <section class="section" id="menu">
+        <div class="section-title">Menu of record</div>
+        <div class="card">
+          <p class="text-muted" style="margin-bottom:14px">Shared with WhatsApp catalog and guest mini-site. Edits save to this browser.</p>
+          <div style="overflow-x:auto">
+            <table class="menu-table" id="menu-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Item</th>
+                  <th>Description</th>
+                  <th class="cat-cell">Category</th>
+                  <th class="price-cell">Price</th>
+                  <th class="avail-cell">On</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="menu-body"></tbody>
+            </table>
+          </div>
+          <div class="menu-add-row flex gap-8">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-item">+ Add item</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-save-menu">Save menu</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOYALTY -->
+      <section class="section" id="loyalty">
+        <div class="section-title">Loyalty rule</div>
+        <div class="card">
+          <div class="loyalty-rule">
+            <span>Buy</span>
+            <input type="number" id="loyalty-stamps" min="3" max="20" value="9" aria-label="Stamps needed" />
+            <span>coffees → reward:</span>
+            <strong id="loyalty-reward-label">1 free coffee</strong>
+          </div>
+          <p class="text-muted mt-12">Virtual punch card in WhatsApp (Wallet later). PECR consent on join.</p>
+          <div class="stamp-preview" id="loyalty-preview" aria-hidden="true"></div>
+          <div class="mt-16">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-save-loyalty">Save rule</button>
+          </div>
+          <div class="mt-16" id="loyalty-members"></div>
+        </div>
+      </section>
+
+      <!-- SALES -->
+      <section class="section" id="sales">
+        <div class="section-title">Sales digest (mocked POS feed)</div>
+        <div class="card">
+          <div class="digest-grid">
+            <div class="stat">
+              <div class="label">Today</div>
+              <div class="value">£842</div>
+              <div class="delta up">↑ 12% vs last Sun</div>
+            </div>
+            <div class="stat">
+              <div class="label">This week</div>
+              <div class="value">£5,210</div>
+              <div class="delta up">↑ 4%</div>
+            </div>
+            <div class="stat">
+              <div class="label">Top item</div>
+              <div class="value" style="font-size:18px">Flat White</div>
+              <div class="delta">142 sold</div>
+            </div>
+            <div class="stat">
+              <div class="label">Quiet hour</div>
+              <div class="value" style="font-size:18px">10–11</div>
+              <div class="delta down">−28% vs peak</div>
+            </div>
+          </div>
+          <div class="draft-box">Morning digest — River Lane
+Card terminal feed synced (read-only). Tips £64 today. Refunds: 1× croissant (£2.80).
+WhatsApp orders so far: see Live orders. Loyalty stamps issued: check members below.
+No action needed — Sales agent is on.</div>
+        </div>
+      </section>
+
+      <!-- INSIGHTS -->
+      <section class="section" id="insights">
+        <div class="section-title">Insights draft</div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Weekly brief · awaiting approve</div>
+              <div class="card-sub">Plain English · margin hints · draft only</div>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="#queue">Go to queue →</a>
+          </div>
+          <div class="draft-box">Oat flat whites are +18% vs last week. Guests with 6+ stamps return within 5 days on average.
+Banana bread sell-through is strong after 2pm — consider a “coffee + bread” combo for quiet 10–11.
+Watch-out: avocado toast food cost looks high if Hass prices hold; confirm with your numbers before changing price.
+Try: ‘1 stamp away’ nudge to the 12 consented guests at 8/9.</div>
+        </div>
+      </section>
+
+      <!-- MARKETING -->
+      <section class="section" id="marketing">
+        <div class="section-title">Marketing draft</div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Google post + loyalty nudge</div>
+              <div class="card-sub">UK consent-first · PECR-aware</div>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="#queue">Go to queue →</a>
+          </div>
+          <div class="draft-box">Google Business post:
+“Quiet mid-morning? Grab a flat white and banana bread — show this post for 10% off before 11am. See you on River Lane ☕”
+
+Loyalty winback (consented only):
+“Hi {{name}} — you’re 1 stamp from a free coffee at River Lane. Valid this week. Reply STOP to opt out.”</div>
+        </div>
+      </section>
+
+      <!-- ACCOUNTANT -->
+      <section class="section" id="accountant">
+        <div class="section-title">Accountant pack preview</div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Books-ready pack · not filed</div>
+              <div class="card-sub">FreeAgent / Xero draft · never auto-file</div>
+            </div>
+            <span class="badge badge-ready">Draft</span>
+          </div>
+          <div class="digest-grid">
+            <div class="stat"><div class="label">Net sales (wk)</div><div class="value" style="font-size:20px">£5,210</div></div>
+            <div class="stat"><div class="label">VAT (est. 20%)</div><div class="value" style="font-size:20px">£868</div></div>
+            <div class="stat"><div class="label">Tips</div><div class="value" style="font-size:20px">£312</div></div>
+            <div class="stat"><div class="label">Loyalty liability</div><div class="value" style="font-size:20px">£41</div></div>
+          </div>
+          <div class="draft-box">Pack includes: sales by day, tips, 1 refund, free-item rewards accrued (loyalty).
+Ready to push as draft journals to FreeAgent or Xero — confirm with your accountant before filing.
+Making Tax Digital: human confirm required.</div>
+          <button type="button" class="btn btn-secondary btn-sm mt-12" id="btn-accountant-mock">Preview “Push draft to FreeAgent”</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+(function () {
+  var AGENTS = [
+    { key: "orders", emoji: "🛒", title: "Orders", blurb: "WhatsApp catalog + web orders. Ticket to kitchen. Pay-at-pickup on your rail." },
+    { key: "loyalty", emoji: "🎫", title: "Loyalty", blurb: "Virtual stamp card in WhatsApp. 9 → 1 free. Consent on join." },
+    { key: "sales", emoji: "📊", title: "Sales", blurb: "Daily digest from your existing card machine. No new terminal." },
+    { key: "insights", emoji: "💡", title: "Insights", blurb: "What’s selling, margin hints, plain-English tries — draft for approve." },
+    { key: "marketing", emoji: "📣", title: "Marketing", blurb: "Google posts, offers, review asks. PECR-first. Always approve." },
+    { key: "accountant", emoji: "📒", title: "Accountant", blurb: "VAT-aware packs for FreeAgent/Xero. Never auto-file." }
+  ];
+
+  function renderAgents() {
+    var s = RLC.load();
+    var grid = document.getElementById("agent-grid");
+    grid.innerHTML = AGENTS.map(function (a) {
+      var on = !!s.agents[a.key];
+      return (
+        '<div class="card agent-card" data-agent="' + a.key + '">' +
+          '<div class="card-head">' +
+            '<div><div class="card-title"><span class="agent-emoji">' + a.emoji + '</span>' + a.title + '</div>' +
+            '<div class="card-sub">' + (on ? "On" : "Off") + "</div></div>" +
+            '<label class="toggle" title="Toggle ' + a.title + '">' +
+              '<input type="checkbox" data-toggle="' + a.key + '"' + (on ? " checked" : "") + " />" +
+              '<span class="toggle-slider"></span>' +
+            "</label>" +
+          "</div>" +
+          '<p class="body">' + a.blurb + "</p>" +
+          '<div class="actions"><span class="agent-status ' + (on ? "on" : "off") + '">' + (on ? "Active" : "Paused") + "</span></div>" +
+        "</div>"
+      );
+    }).join("");
+
+    grid.querySelectorAll("[data-toggle]").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        RLC.setAgent(inp.getAttribute("data-toggle"), inp.checked);
+        renderAgents();
+        RLC.toast((inp.checked ? "On: " : "Off: ") + inp.getAttribute("data-toggle"));
+      });
+    });
+  }
+
+  function renderQueue() {
+    var s = RLC.load();
+    var el = document.getElementById("queue-list");
+    var pending = s.queue.filter(function (q) { return q.status === "pending"; });
+    var done = s.queue.filter(function (q) { return q.status !== "pending"; });
+    if (!pending.length && !done.length) {
+      el.innerHTML = '<div class="empty-state">Queue empty — agents will drop drafts here.</div>';
+      return;
+    }
+    var html = pending.map(function (q) {
+      return (
+        '<div class="queue-item" data-qid="' + q.id + '">' +
+          "<div>" +
+            '<div class="who">' + q.agent + " · needs approve</div>" +
+            '<div class="what">' + q.title + "</div>" +
+            '<div class="draft">' + escapeHtml(q.draft) + "</div>" +
+          "</div>" +
+          '<div class="queue-actions">' +
+            '<button type="button" class="btn btn-primary btn-sm" data-approve="' + q.id + '">Approve</button>' +
+            '<button type="button" class="btn btn-secondary btn-sm" data-reject="' + q.id + '">Reject</button>' +
+          "</div>" +
+        "</div>"
+      );
+    }).join("");
+    if (done.length) {
+      html += '<p class="text-muted mt-12">Resolved: ' + done.map(function (q) {
+        return q.title.split("—")[0].trim() + " (" + q.status + ")";
+      }).join(" · ") + "</p>";
+    }
+    el.innerHTML = html || '<div class="empty-state">All caught up — nothing waiting.</div>';
+
+    el.querySelectorAll("[data-approve]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        RLC.approveQueue(b.getAttribute("data-approve"), true);
+        RLC.toast("Approved — would publish / send");
+        renderQueue();
+      });
+    });
+    el.querySelectorAll("[data-reject]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        RLC.approveQueue(b.getAttribute("data-reject"), false);
+        RLC.toast("Rejected");
+        renderQueue();
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderMenu() {
+    var s = RLC.load();
+    var body = document.getElementById("menu-body");
+    body.innerHTML = s.menu.map(function (m, i) {
+      return (
+        "<tr data-idx=\"" + i + "\">" +
+          '<td style="width:40px;font-size:20px">' + (m.emoji || "☕") + "</td>" +
+          '<td><input data-f="name" value="' + escapeAttr(m.name) + '" /></td>' +
+          '<td><input data-f="desc" value="' + escapeAttr(m.desc || "") + '" /></td>' +
+          '<td class="cat-cell"><select data-f="cat">' +
+            ["Coffee", "Food", "Drinks"].map(function (c) {
+              return '<option value="' + c + '"' + (m.cat === c ? " selected" : "") + ">" + c + "</option>";
+            }).join("") +
+          "</select></td>" +
+          '<td class="price-cell"><input data-f="price" type="number" step="0.1" min="0" value="' + m.price + '" /></td>' +
+          '<td class="avail-cell"><input data-f="avail" type="checkbox"' + (m.avail !== false ? " checked" : "") + " /></td>" +
+          '<td><button type="button" class="btn btn-ghost btn-sm" data-del="' + i + '" aria-label="Remove">✕</button></td>' +
+        "</tr>"
+      );
+    }).join("");
+
+    body.querySelectorAll("[data-del]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var idx = Number(b.getAttribute("data-del"));
+        var menu = RLC.load().menu.slice();
+        menu.splice(idx, 1);
+        RLC.setMenu(menu);
+        renderMenu();
+      });
+    });
+  }
+
+  function escapeAttr(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  }
+
+  function collectMenuFromDom() {
+    var rows = document.querySelectorAll("#menu-body tr");
+    var s = RLC.load();
+    var menu = [];
+    rows.forEach(function (tr, i) {
+      var prev = s.menu[i] || {};
+      menu.push({
+        id: prev.id || RLC.uid("m"),
+        emoji: prev.emoji || "☕",
+        name: tr.querySelector('[data-f="name"]').value.trim() || "Untitled",
+        desc: tr.querySelector('[data-f="desc"]').value.trim(),
+        cat: tr.querySelector('[data-f="cat"]').value,
+        price: parseFloat(tr.querySelector('[data-f="price"]').value) || 0,
+        avail: tr.querySelector('[data-f="avail"]').checked
+      });
+    });
+    return menu;
+  }
+
+  function renderOrders() {
+    var s = RLC.load();
+    var el = document.getElementById("orders-list");
+    if (!s.orders.length) {
+      el.innerHTML =
+        '<div class="empty-state">No orders yet.<br/>Place one from <a href="guest-whatsapp.html">Guest WhatsApp</a> or the <a href="guest-site.html">mini-site</a> — it will appear here.</div>';
+      return;
+    }
+    el.innerHTML = s.orders.map(function (o) {
+      var items = o.items.map(function (it) {
+        return (it.qty > 1 ? it.qty + "× " : "") + it.name;
+      }).join(", ");
+      var badge =
+        o.status === "new" ? "badge-new" :
+        o.status === "ready" ? "badge-ready" : "badge-done";
+      return (
+        '<div class="order-card ' + (o.status === "new" ? "new" : "") + '">' +
+          "<div>" +
+            '<div class="oid">' + o.id + " · " + RLC.formatTime(o.createdAt) + "</div>" +
+            '<div class="guest">' + escapeHtml(o.guest) + "</div>" +
+            '<div class="items">' + escapeHtml(items) + " · <strong>" + RLC.money(o.total) + "</strong></div>" +
+            '<div class="meta">' +
+              "<span>" + (o.channel === "site" ? "🌐 Mini-site" : "💬 WhatsApp") + "</span>" +
+              '<span class="badge badge-pay">' + (o.pay === "pay-at-pickup" ? "Pay at pickup" : o.pay) + "</span>" +
+              "<span>Pickup: " + escapeHtml(o.pickup || "ASAP") + "</span>" +
+              (o.stamped ? "<span>🎫 Stamped</span>" : "") +
+              (o.notes ? "<span>Note: " + escapeHtml(o.notes) + "</span>" : "") +
+            "</div>" +
+          "</div>" +
+          "<div style=\"text-align:right\">" +
+            '<span class="badge ' + badge + '">' + o.status + "</span>" +
+            (o.status === "new"
+              ? '<div class="mt-12"><button type="button" class="btn btn-primary btn-sm" data-ready="' + o.id + '">Mark ready</button></div>'
+              : o.status === "ready"
+              ? '<div class="mt-12"><button type="button" class="btn btn-secondary btn-sm" data-done="' + o.id + '">Done</button></div>'
+              : "") +
+          "</div>" +
+        "</div>"
+      );
+    }).join("");
+
+    el.querySelectorAll("[data-ready]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        RLC.markOrder(b.getAttribute("data-ready"), "ready");
+        RLC.toast("Marked ready — guest would get a WhatsApp ping");
+        renderOrders();
+      });
+    });
+    el.querySelectorAll("[data-done]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        RLC.markOrder(b.getAttribute("data-done"), "done");
+        renderOrders();
+      });
+    });
+  }
+
+  function renderLoyalty() {
+    var s = RLC.load();
+    document.getElementById("loyalty-stamps").value = s.loyaltyRule.stampsNeeded;
+    document.getElementById("loyalty-reward-label").textContent = s.loyaltyRule.rewardLabel || "1 free coffee";
+    var n = s.loyaltyRule.stampsNeeded || 9;
+    var preview = document.getElementById("loyalty-preview");
+    preview.innerHTML = "";
+    for (var i = 0; i < n; i++) {
+      var d = document.createElement("div");
+      d.className = "stamp";
+      d.textContent = i + 1 === n ? "★" : "";
+      preview.appendChild(d);
+    }
+    var members = s.loyaltyMembers || {};
+    var keys = Object.keys(members);
+    var box = document.getElementById("loyalty-members");
+    if (!keys.length) {
+      box.innerHTML = '<p class="text-muted">No members yet.</p>';
+      return;
+    }
+    box.innerHTML =
+      '<div class="section-title" style="margin-top:8px">Members (demo)</div>' +
+      keys.map(function (k) {
+        var m = members[k];
+        return (
+          '<div class="flex gap-8" style="align-items:center;margin-bottom:8px;font-size:14px">' +
+            "<strong>" + escapeHtml(m.name) + "</strong>" +
+            "<span class=\"text-muted\">" + (m.stamps || 0) + " / " + n + " stamps</span>" +
+            '<div class="stamp-preview" style="margin:0">' +
+              Array.from({ length: n }).map(function (_, i) {
+                return '<div class="stamp' + (i < (m.stamps || 0) ? " filled" : "") + '" style="width:22px;height:22px;font-size:10px">' +
+                  (i < (m.stamps || 0) ? "✓" : "") + "</div>";
+              }).join("") +
+            "</div>" +
+          "</div>"
+        );
+      }).join("");
+  }
+
+  document.getElementById("btn-save-menu").addEventListener("click", function () {
+    RLC.setMenu(collectMenuFromDom());
+    RLC.toast("Menu saved — WhatsApp & site will pick it up");
+    renderMenu();
+  });
+
+  document.getElementById("btn-add-item").addEventListener("click", function () {
+    var menu = collectMenuFromDom();
+    menu.push({
+      id: RLC.uid("m"),
+      name: "New item",
+      desc: "",
+      price: 3.0,
+      cat: "Coffee",
+      avail: true,
+      emoji: "✨"
+    });
+    RLC.setMenu(menu);
+    renderMenu();
+  });
+
+  document.getElementById("btn-save-loyalty").addEventListener("click", function () {
+    var n = document.getElementById("loyalty-stamps").value;
+    RLC.setLoyaltyRule(n, "1 free coffee");
+    RLC.toast("Loyalty rule saved: " + n + " → 1 free coffee");
+    renderLoyalty();
+  });
+
+  document.getElementById("loyalty-stamps").addEventListener("input", function () {
+    var n = Math.min(20, Math.max(3, Number(this.value) || 9));
+    var preview = document.getElementById("loyalty-preview");
+    preview.innerHTML = "";
+    for (var i = 0; i < n; i++) {
+      var d = document.createElement("div");
+      d.className = "stamp";
+      d.textContent = i + 1 === n ? "★" : "";
+      preview.appendChild(d);
+    }
+  });
+
+  document.getElementById("btn-accountant-mock").addEventListener("click", function () {
+    RLC.toast("Prototype only — would open FreeAgent draft journals (not filed)");
+  });
+
+  /* nav active state on scroll / click */
+  document.querySelectorAll(".m-nav a[href^='#']").forEach(function (a) {
+    a.addEventListener("click", function () {
+      document.querySelectorAll(".m-nav a").forEach(function (x) { x.classList.remove("active"); });
+      a.classList.add("active");
+    });
+  });
+
+  function refresh() {
+    renderAgents();
+    renderQueue();
+    renderMenu();
+    renderOrders();
+    renderLoyalty();
+  }
+
+  refresh();
+  /* poll lightly so guest orders show up without reload if both tabs open */
+  setInterval(function () {
+    renderOrders();
+    renderLoyalty();
+  }, 2000);
+})();
+  </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>River Lane Coffee — UK micro-business robot (prototype)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="landing">
+    <header class="landing-hero">
+      <div class="landing-inner">
+        <div class="landing-top">
+          <div class="brand-mark">
+            <div class="brand-logo" aria-hidden="true">☕</div>
+            <span>River Lane Coffee</span>
+          </div>
+          <span class="proto-badge">Prototype</span>
+        </div>
+        <h1>Agents for a UK coffee shop — without replacing the card machine</h1>
+        <p class="lead">
+          No-code merchant console with Sales, Insights, Accountant, Marketing, Orders &amp; Loyalty.
+          Guests order from WhatsApp or a light mini-site. Virtual stamp card: 9 → 1 free coffee.
+        </p>
+        <div class="landing-meta">
+          <span class="chip">Demo brand · London</span>
+          <span class="chip">Pay-at-pickup (mocked)</span>
+          <span class="chip">file:// friendly</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="landing-body">
+      <div class="portal-grid">
+        <a class="portal-card" href="merchant.html">
+          <div class="portal-icon" aria-hidden="true">🏪</div>
+          <h2>Merchant console</h2>
+          <p>Agent toggles, approve queue, menu of record, loyalty rule, sales digest, live orders inbox. Desktop-width.</p>
+          <span class="cta">Open console →</span>
+        </a>
+        <a class="portal-card wa" href="guest-whatsapp.html">
+          <div class="portal-icon" aria-hidden="true">💬</div>
+          <h2>Guest · WhatsApp</h2>
+          <p>Phone-frame chat mock: browse catalog, add to basket, confirm, pay-at-pickup, see loyalty stamps.</p>
+          <span class="cta">Open WhatsApp mock →</span>
+        </a>
+        <a class="portal-card site" href="guest-site.html">
+          <div class="portal-icon" aria-hidden="true">🌐</div>
+          <h2>Guest · Mini-site</h2>
+          <p>Owner-like presence: menu, hours, order, join loyalty. Shares the same menu of record.</p>
+          <span class="cta">Open mini-site →</span>
+        </a>
+      </div>
+
+      <div class="landing-note">
+        <strong>How to try the loop:</strong>
+        Place an order in Guest WhatsApp (or the mini-site) → open Merchant console → see it in Live orders → stamp loyalty.
+        State lives in <code>localStorage</code> under <code>rlc_proto_v1</code> (same browser).
+        No real payments, no WhatsApp API, no POS — all mocked.
+        <div class="mt-12">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-reset">Reset demo data</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="landing-footer">
+      UK micro-business API robot · clickable HTML prototype · not a live product
+    </footer>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById("btn-reset").addEventListener("click", function () {
+      if (confirm("Clear all prototype orders, loyalty stamps, and queue decisions?")) {
+        RLC.resetDemo();
+        setTimeout(function () { location.reload(); }, 400);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>WhatsApp · River Lane Coffee (prototype)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wa-page">
+    <div class="wa-page-top">
+      <a href="index.html">← Portals</a>
+      <span class="proto-badge">Prototype · not real WhatsApp</span>
+      <a href="merchant.html">Merchant →</a>
+    </div>
+
+    <div class="phone" id="phone" role="application" aria-label="WhatsApp mock for River Lane Coffee">
+      <div class="phone-notch"><span></span></div>
+      <header class="wa-header">
+        <a class="wa-back" href="index.html" aria-label="Back">‹</a>
+        <div class="wa-avatar" aria-hidden="true">☕</div>
+        <div class="info">
+          <div class="name">River Lane Coffee</div>
+          <div class="status">usually replies instantly</div>
+        </div>
+      </header>
+
+      <div class="wa-chat" id="chat" aria-live="polite"></div>
+
+      <div id="basket-bar" class="basket-bar hidden" role="button" tabindex="0">
+        <span id="basket-summary">Basket</span>
+        <span>View →</span>
+      </div>
+
+      <div class="wa-composer">
+        <input type="text" id="composer" placeholder="Message" autocomplete="off" aria-label="Message" />
+        <button type="button" class="wa-send" id="btn-send" aria-label="Send">➤</button>
+      </div>
+
+      <div id="basket-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="basket-title">
+        <div class="modal-sheet">
+          <h3 id="basket-title">Your order</h3>
+          <div id="basket-lines"></div>
+          <div class="basket-total">
+            <span>Total</span>
+            <span id="basket-total">£0.00</span>
+          </div>
+          <label for="pickup-time" style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Pickup</label>
+          <select id="pickup-time" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:12px">
+            <option value="ASAP (~10 min)">ASAP (~10 min)</option>
+            <option value="in 20 min">In 20 minutes</option>
+            <option value="in 30 min">In 30 minutes</option>
+          </select>
+          <label for="order-notes" style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Notes / allergens</label>
+          <input id="order-notes" type="text" placeholder="e.g. oat milk, no nuts" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:14px" />
+          <button type="button" class="btn btn-primary btn-block" id="btn-confirm">Confirm · pay at pickup</button>
+          <button type="button" class="btn btn-secondary btn-block mt-12" id="btn-close-basket">Keep browsing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+(function () {
+  var basket = []; /* {id,name,price,qty,emoji} */
+  var chat = document.getElementById("chat");
+
+  function nowTime() {
+    return new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function addBubble(who, html, extraClass) {
+    var d = document.createElement("div");
+    d.className = "bubble " + who + (extraClass ? " " + extraClass : "");
+    d.innerHTML = html + '<div class="time">' + nowTime() + "</div>";
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+    return d;
+  }
+
+  function addNode(node) {
+    chat.appendChild(node);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function renderCatalog() {
+    var menu = RLC.availableMenu();
+    var wrap = document.createElement("div");
+    wrap.className = "catalog-card";
+    wrap.innerHTML = '<div class="cat-head">📋 Menu · River Lane Coffee</div>';
+    menu.forEach(function (m) {
+      var row = document.createElement("div");
+      row.className = "catalog-item";
+      row.setAttribute("role", "button");
+      row.tabIndex = 0;
+      row.innerHTML =
+        '<div class="emoji">' + (m.emoji || "☕") + "</div>" +
+        '<div class="ci-info">' +
+          '<div class="ci-name">' + escapeHtml(m.name) + "</div>" +
+          '<div class="ci-desc">' + escapeHtml(m.desc || "") + "</div>" +
+          '<div class="ci-price">' + RLC.money(m.price) + "</div>" +
+        "</div>";
+      function add() { addToBasket(m); }
+      row.addEventListener("click", add);
+      row.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); add(); }
+      });
+      wrap.appendChild(row);
+    });
+    addNode(wrap);
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function addToBasket(m) {
+    var existing = basket.find(function (b) { return b.id === m.id; });
+    if (existing) existing.qty += 1;
+    else basket.push({ id: m.id, name: m.name, price: m.price, qty: 1, emoji: m.emoji });
+    updateBasketBar();
+    addBubble("me", "Add " + escapeHtml(m.name));
+    setTimeout(function () {
+      addBubble("them",
+        '<div class="sender">River Lane</div>Added <strong>' +
+        escapeHtml(m.name) + "</strong> (" + RLC.money(m.price) + "). Tap more from the menu, or view your basket.");
+      showQuick(["View basket", "My loyalty card", "Menu"]);
+    }, 350);
+  }
+
+  function updateBasketBar() {
+    var bar = document.getElementById("basket-bar");
+    var count = basket.reduce(function (n, b) { return n + b.qty; }, 0);
+    var total = basket.reduce(function (n, b) { return n + b.price * b.qty; }, 0);
+    if (count === 0) {
+      bar.classList.add("hidden");
+      return;
+    }
+    bar.classList.remove("hidden");
+    document.getElementById("basket-summary").textContent =
+      count + " item" + (count === 1 ? "" : "s") + " · " + RLC.money(total);
+  }
+
+  function showQuick(labels) {
+    /* remove previous quick row */
+    var old = chat.querySelector(".wa-quick");
+    if (old) old.remove();
+    var row = document.createElement("div");
+    row.className = "wa-quick";
+    labels.forEach(function (lab) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip-btn";
+      b.textContent = lab;
+      b.addEventListener("click", function () { handleQuick(lab); });
+      row.appendChild(b);
+    });
+    addNode(row);
+  }
+
+  function handleQuick(lab) {
+    if (lab === "View basket" || lab === "Checkout") openBasket();
+    else if (lab === "My loyalty card" || lab === "Loyalty card") showLoyalty();
+    else if (lab === "Menu" || lab === "Browse menu") {
+      addBubble("me", "Menu please");
+      setTimeout(function () {
+        addBubble("them", '<div class="sender">River Lane</div>Here\'s today\'s menu — tap an item to add.');
+        renderCatalog();
+        showQuick(["My loyalty card", "View basket"]);
+      }, 300);
+    } else if (lab === "Pay at pickup") {
+      /* handled in confirm */
+    }
+  }
+
+  function showLoyalty() {
+    addBubble("me", "Show my loyalty card");
+    setTimeout(function () {
+      var s = RLC.load();
+      var member = s.loyaltyMembers.guest_demo || { name: "You", stamps: 0 };
+      var needed = s.loyaltyRule.stampsNeeded || 9;
+      var stamps = member.stamps || 0;
+      var card = document.createElement("div");
+      card.className = "loyalty-card-wa";
+      var stampsHtml = "";
+      for (var i = 0; i < needed; i++) {
+        stampsHtml += '<div class="st' + (i < stamps ? " filled" : "") + '">' + (i < stamps ? "✓" : "") + "</div>";
+      }
+      var left = needed - stamps;
+      card.innerHTML =
+        '<div class="lc-brand">RIVER LANE COFFEE</div>' +
+        '<div class="lc-title">Stamp card</div>' +
+        '<div class="stamps">' + stampsHtml + "</div>" +
+        '<div class="lc-foot">' + stamps + " / " + needed +
+        " · " + (left <= 0 ? "Reward ready — " + (s.loyaltyRule.rewardLabel || "1 free coffee") + "!" :
+          left + " more → " + (s.loyaltyRule.rewardLabel || "1 free coffee")) +
+        "</div>";
+      addNode(card);
+      addBubble("them", '<div class="sender">River Lane</div>Your virtual card. Stamps apply when an order is completed (prototype: on confirm).');
+      showQuick(["Browse menu", "View basket"]);
+    }, 300);
+  }
+
+  function openBasket() {
+    if (!basket.length) {
+      RLC.toast("Basket empty — tap a menu item");
+      return;
+    }
+    var lines = document.getElementById("basket-lines");
+    lines.innerHTML = basket.map(function (b) {
+      return (
+        '<div class="basket-line">' +
+          "<span>" + (b.qty > 1 ? b.qty + "× " : "") + escapeHtml(b.name) + "</span>" +
+          "<span>" + RLC.money(b.price * b.qty) + "</span>" +
+        "</div>"
+      );
+    }).join("");
+    var total = basket.reduce(function (n, b) { return n + b.price * b.qty; }, 0);
+    document.getElementById("basket-total").textContent = RLC.money(total);
+    document.getElementById("basket-modal").classList.remove("hidden");
+  }
+
+  function closeBasket() {
+    document.getElementById("basket-modal").classList.add("hidden");
+  }
+
+  function confirmOrder() {
+    if (!basket.length) return;
+    var pickup = document.getElementById("pickup-time").value;
+    var notes = document.getElementById("order-notes").value.trim();
+    var items = basket.map(function (b) {
+      return { id: b.id, name: b.name, price: b.price, qty: b.qty };
+    });
+    var order = RLC.placeOrder({
+      guest: "Alex (WhatsApp)",
+      items: items,
+      channel: "whatsapp",
+      pay: "pay-at-pickup",
+      pickup: pickup,
+      notes: notes,
+      memberId: "guest_demo",
+      stamp: true
+    });
+    closeBasket();
+    var summary = items.map(function (it) {
+      return (it.qty > 1 ? it.qty + "× " : "") + it.name;
+    }).join(", ");
+    addBubble("me", "Confirm order — pay at pickup");
+    basket = [];
+    updateBasketBar();
+    setTimeout(function () {
+      var s = RLC.load();
+      var stamps = (s.loyaltyMembers.guest_demo && s.loyaltyMembers.guest_demo.stamps) || 0;
+      var needed = s.loyaltyRule.stampsNeeded || 9;
+      addBubble("them",
+        '<div class="sender">River Lane</div>' +
+        "✅ <strong>Order confirmed</strong><br/>" +
+        escapeHtml(summary) + "<br/>" +
+        "Total <strong>" + RLC.money(order.total) + "</strong> · pay at the counter<br/>" +
+        "Pickup: " + escapeHtml(pickup) + "<br/>" +
+        "<span style=\"font-size:12px;color:#667781\">Ref " + order.id + "</span><br/><br/>" +
+        "🎫 Loyalty: " + stamps + "/" + needed + " stamps" +
+        (stamps >= needed ? " — free coffee unlocked!" : "")
+      );
+      showQuick(["My loyalty card", "Browse menu"]);
+      RLC.toast("Order sent to merchant inbox");
+    }, 500);
+  }
+
+  function handleSend() {
+    var input = document.getElementById("composer");
+    var text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    addBubble("me", escapeHtml(text));
+    var lower = text.toLowerCase();
+    setTimeout(function () {
+      if (/menu|catalogue|catalog|order|coffee|what.*(have|got)/i.test(lower)) {
+        addBubble("them", '<div class="sender">River Lane</div>Here\'s the menu — tap to add.');
+        renderCatalog();
+        showQuick(["View basket", "My loyalty card"]);
+      } else if (/card|loyalty|stamp|punch/i.test(lower)) {
+        showLoyalty();
+      } else if (/basket|checkout|cart/i.test(lower)) {
+        openBasket();
+      } else if (/hi|hello|hey|hola/i.test(lower)) {
+        addBubble("them", '<div class="sender">River Lane</div>Hi! Welcome to River Lane Coffee ☕ Want the menu, or your loyalty card?');
+        showQuick(["Browse menu", "My loyalty card"]);
+      } else {
+        addBubble("them", '<div class="sender">River Lane</div>Thanks — for this prototype, tap <strong>Browse menu</strong> or ask for your <strong>loyalty card</strong>. (Real product would understand free text + catalog.)');
+        showQuick(["Browse menu", "My loyalty card", "View basket"]);
+      }
+    }, 400);
+  }
+
+  document.getElementById("btn-send").addEventListener("click", handleSend);
+  document.getElementById("composer").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); handleSend(); }
+  });
+  document.getElementById("basket-bar").addEventListener("click", openBasket);
+  document.getElementById("basket-bar").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") openBasket();
+  });
+  document.getElementById("btn-close-basket").addEventListener("click", closeBasket);
+  document.getElementById("btn-confirm").addEventListener("click", confirmOrder);
+  document.getElementById("basket-modal").addEventListener("click", function (e) {
+    if (e.target === this) closeBasket();
+  });
+
+  /* boot conversation */
+  addBubble("them", '<div class="sender">River Lane</div>Hi! You\'re chatting with <strong>River Lane Coffee</strong> on Shoreditch High St.<br/><br/>Browse the menu, order for pickup, or check your stamp card — no app install needed.');
+  renderCatalog();
+  showQuick(["My loyalty card", "View basket"]);
+})();
+  </script>
+</body>
+</html>
